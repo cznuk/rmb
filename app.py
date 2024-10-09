@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file, redirect, url_for
+from flask import Flask, render_template, request, send_file, redirect, url_for, send_from_directory
 from rembg import remove
 from PIL import Image
 import io
@@ -17,6 +17,11 @@ port = int(os.environ.get('PORT', 10000))
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 
+# Add this route to serve files from the PROCESSED_FOLDER
+@app.route('/static/processed/<path:filename>')
+def serve_processed(filename):
+    return send_from_directory(PROCESSED_FOLDER, filename)
+
 @app.route('/', methods=['GET'])
 def index():
     batch_id = request.args.get('batch_id')
@@ -25,7 +30,7 @@ def index():
         batch_folder = os.path.join(PROCESSED_FOLDER, batch_id)
         if os.path.exists(batch_folder):
             images = os.listdir(batch_folder)
-            images = [os.path.join(batch_id, img) for img in images]
+
     return render_template('index.html', images=images, batch_id=batch_id)
 
 @app.route('/upload', methods=['POST'])
@@ -95,11 +100,22 @@ def download_all():
                 original_path = os.path.join(batch_folder, original_filename)
                 
                 if os.path.exists(original_path):
-                    # Create new filename based on user input
-                    new_filename = f"{image_names[i].replace(' ', '')}-{image_sizes[i]}-{i+1}.webp"
-                    
-                    # Add file to zip with new name
-                    zip_file.write(original_path, arcname=new_filename)
+                    # Open the original image
+                    with Image.open(original_path) as img:
+                        # Copy the original image without resizing
+                        img_copy = img.copy()
+                        
+                        # Use the size in the filename only
+                        size = image_sizes[i]
+                        new_filename = f"{image_names[i].replace(' ', '')}-{size}-{1}.webp"
+                        
+                        # Save the image to a BytesIO object
+                        img_buffer = io.BytesIO()
+                        img_copy.save(img_buffer, format='WEBP')
+                        img_buffer.seek(0)
+                        
+                        # Add the image to the zip file
+                        zip_file.writestr(new_filename, img_buffer.getvalue())
 
     zip_buffer.seek(0)
     return send_file(
@@ -108,6 +124,7 @@ def download_all():
         as_attachment=True,
         download_name='processed_images.zip'
     )
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port)

@@ -148,7 +148,7 @@
             <div class="grid">
                 {% for image in images %}
                 <div class="image-container">
-                    <img src="{{ url_for('static', filename='processed/' + image) }}" alt="Processed Image">
+                    <img src="{{ url_for('serve_processed', filename=batch_id ~ '/' ~ image) }}" alt="Processed Image">
                     <div class="image-input-group">
                         <input type="text" 
                                name="image_names[]" 
@@ -164,7 +164,7 @@
                         <input type="hidden" name="original_filenames[]" value="{{ image }}">
                     </div>
                 </div>
-                {% endfor %}
+                {% endfor %}                
             </div>
             <button type="submit">Download All</button>
         </form>
