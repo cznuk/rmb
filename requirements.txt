@@ -1,4 +1,4 @@
-Flask==2.0.1
-rembg==2.0.30
-Pillow==9.0.0
-gunicorn==20.1.0
+Flask==2.3.3
+rembg==2.0.59
+Pillow==10.0.1
+gunicorn==21.2.0
