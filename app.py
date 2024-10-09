@@ -12,7 +12,7 @@ UPLOAD_FOLDER = '/tmp/uploads'
 PROCESSED_FOLDER = '/tmp/static/processed'
 
 # Configure the app to use the PORT environment variable
-port = int(os.environ.get('PORT', 10000))
+port = int(os.environ.get('PORT', 8080))
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PROCESSED_FOLDER, exist_ok=True)
@@ -124,3 +124,7 @@ def download_all():
         as_attachment=True,
         download_name='processed_images.zip'
     )
+
+    if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port)
