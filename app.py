@@ -79,16 +79,28 @@ def upload():
 @app.route('/download_all', methods=['POST'])
 def download_all():
     batch_id = request.form.get('batch_id')
+    image_names = request.form.getlist('image_names[]')
+    image_sizes = request.form.getlist('image_sizes[]')
+    original_filenames = request.form.getlist('original_filenames[]')
+    
     batch_folder = os.path.join(PROCESSED_FOLDER, batch_id)
     if not os.path.exists(batch_folder):
         return 'Batch not found', 404
 
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-        processed_images = os.listdir(batch_folder)
-        for filename in processed_images:
-            file_path = os.path.join(batch_folder, filename)
-            zip_file.write(file_path, arcname=filename)
+        for i, original_filename in enumerate(original_filenames):
+            if i < len(image_names) and i < len(image_sizes):
+                # Get original file path
+                original_path = os.path.join(batch_folder, original_filename)
+                
+                if os.path.exists(original_path):
+                    # Create new filename based on user input
+                    new_filename = f"{image_names[i].replace(' ', '')}-{image_sizes[i]}-{i+1}.webp"
+                    
+                    # Add file to zip with new name
+                    zip_file.write(original_path, arcname=new_filename)
+
     zip_buffer.seek(0)
     return send_file(
         zip_buffer,

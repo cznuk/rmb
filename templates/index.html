@@ -83,6 +83,33 @@
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
+        .image-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .image-input-group {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .image-input-group input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .image-input-group select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -116,14 +143,30 @@
 
         {% if images %}
         <h2>Processed Images</h2>
-        <div class="grid">
-            {% for image in images %}
-            <img src="{{ url_for('static', filename='processed/' + image) }}" alt="Processed Image">
-            {% endfor %}
-        </div>
-        <form action="/download_all" method="post">
+        <form action="/download_all" method="post" id="download-form">
             <input type="hidden" name="batch_id" value="{{ batch_id }}">
-            <button id="download-all" type="submit">Download All</button>
+            <div class="grid">
+                {% for image in images %}
+                <div class="image-container">
+                    <img src="{{ url_for('static', filename='processed/' + image) }}" alt="Processed Image">
+                    <div class="image-input-group">
+                        <input type="text" 
+                               name="image_names[]" 
+                               placeholder="Enter image name"
+                               required>
+                        <select name="image_sizes[]">
+                            <option value="40" selected>40</option>
+                            <option value="20">20</option>
+                            <option value="24">24</option>
+                            <option value="30">30</option>
+                            <option value="32">32</option>
+                        </select>
+                        <input type="hidden" name="original_filenames[]" value="{{ image }}">
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="submit">Download All</button>
         </form>
         {% endif %}
     </div>
