@@ -8,8 +8,8 @@ import uuid
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'uploads'
-PROCESSED_FOLDER = 'static/processed'
+UPLOAD_FOLDER = '/tmp/uploads'
+PROCESSED_FOLDER = '/tmp/static/processed'
 
 # Configure the app to use the PORT environment variable
 port = int(os.environ.get('PORT', 10000))
