@@ -124,8 +124,3 @@ def download_all():
         as_attachment=True,
         download_name='processed_images.zip'
     )
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=port)
-    print(f"Application is running on port {port}")
