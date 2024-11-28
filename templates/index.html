@@ -54,6 +54,18 @@
         button:hover {
             background-color: #2980b9;
         }
+        select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            color: #495057;
+            cursor: pointer;
+        }
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -128,6 +140,36 @@
     <div class="container">
         <h1>Image Background Remover</h1>
         <form action="/upload" method="post" enctype="multipart/form-data" id="upload-form">
+            <!-- Add Size Dropdown -->
+            <label for="size-select">Select Bottle Size:</label>
+            <select name="size" id="size-select" required>
+                <option value="">--Select Size--</option>
+                
+                <option value="40">40 oz</option>
+                <option value="32">32 oz</option>
+                <option value="30">30 oz</option>
+                <option value="26">26 oz</option>
+
+                <option value="25">25 oz</option>
+                <option value="24">24 oz</option>
+                <option value="22">22 oz</option>
+
+                <option value="20">20 oz</option>
+                <option value="16">16 oz</option>
+                <option value="12">12 oz</option>
+                <option value="10">10 oz</option>
+                <option value="8">8 canteen oz</option>
+
+                <option value="35">35 oz</option>
+                <option value="15">15 oz</option>
+                <option value="14">14 oz</option>
+                <option value="7">7 oz</option>
+                <option value="64">64 oz</option>
+                <option value="49">49 oz</option>
+
+            </select>
+            <br><br>
+
             <label for="file-upload" class="custom-file-upload">
                 Choose Images
             </label>
@@ -145,6 +187,7 @@
         <h2>Processed Images</h2>
         <form action="/download_all" method="post" id="download-form">
             <input type="hidden" name="batch_id" value="{{ batch_id }}">
+            <input type="hidden" name="size" value="{{ size }}">
             <div class="grid">
                 {% for image in images %}
                 <div class="image-container">
@@ -154,13 +197,7 @@
                                name="image_names[]" 
                                placeholder="Enter image name"
                                required>
-                        <select name="image_sizes[]">
-                            <option value="40" selected>40</option>
-                            <option value="20">20</option>
-                            <option value="24">24</option>
-                            <option value="30">30</option>
-                            <option value="32">32</option>
-                        </select>
+                        <!-- Removed the individual image size selector -->
                         <input type="hidden" name="original_filenames[]" value="{{ image }}">
                     </div>
                 </div>
@@ -179,11 +216,10 @@
             const fileNameSpan = document.getElementById('file-name');
 
             form.addEventListener('submit', function(e) {
-                e.preventDefault();
                 if (fileInput.files.length > 0) {
                     loadingDiv.style.display = 'block';
-                    form.submit();
                 } else {
+                    e.preventDefault();
                     alert('Please select at least one image to upload.');
                 }
             });
